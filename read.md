@@ -12,11 +12,11 @@ The SSD network structure
 The core idea behind SSD network is to have a CNN that takes in an image as input and produce detections at different scales, shapes, and locations.
 SSD300 SSD500 difference: input size 
 ## Code:
-1. Create a config file to store all parameters
-2. Construct DefaultBoxes and L2 Normalization Layer
+1. 1configs. Create a config file to store all parameters
+2. 2custom_layers. Construct DefaultBoxes and L2 Normalization Layer
 DefaultBoxes layers: During the training stage the values from this layer are not needed. However, during inference stage, the values from this layer will be crucial for decoding bounding box predictions produced by the network.
 L2 Normalization Layer: This layer is used to apply L2 Normalization with a learnable scale value. It will only be used on the conv4_3 feature maps layer. 
-3. Construct the ssd network:
+3. 3networks. Construct the ssd network:
   1)Constructs the base network, loads a pre-trained weights, and freeze the base network layers so that its weights will not changed during training.
   2)Constructs the SSD’s extra feature layers.
   3)Determines all the possible scales for default boxes.
@@ -28,7 +28,7 @@ L2 Normalization Layer: This layer is used to apply L2 Normalization with a lea
   6)Concatenate localization predictions for every feature maps together
   7)Concatenate all default boxes for every feature maps layers together
   8)Concatenate all classifications, localizations, and default boxes together to produce a final output of shape (total_default_boxes, num_classes + 1 + 4 + 8)
- 4. SSD Loss function: smooth L1 loss + softmax loss
+ 4. loss. SSD Loss function: smooth L1 loss + softmax loss
 ## The SSD Loss function
 SSD output has the shape of ( total_default_boxes, num_classes +1+4+8)
 What included in each total_default_boxed item are:
