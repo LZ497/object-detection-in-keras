@@ -11,6 +11,16 @@ CNN are created to deal with image classification tasks produce its final output
 The SSD network structure
 The core idea behind SSD network is to have a CNN that takes in an image as input and produce detections at different scales, shapes, and locations.
 SSD300 SSD500 difference: input size 
+## The SSD Loss function
+SSD output has the shape of ( total_default_boxes, num_classes +1+4+8)
+What included in each total_default_boxed item are:
+1. Confidence scores for num_classes +1 background class
+2. 4 bounding box properties: cx ( the x offset to the matched defaults box’s center), cy (the y offset to the matched default box’s center), the log scale transform of the width of the bounding box (w),  and the log scale transform of the height of the bounding box (h)
+3. 4default values: the center x offset of the default box from the left of the image, the center y offset of the default box from the top of the image, the width of the default box, the height of the default box.
+4. 4 variance values: the values used to encode/ decode bounding box data.
+1, 2 are learnable by the ssd network and 3, 4 are constant.
+SSD loss function combines together regression loss (L_loc) and the classification loss(L_conf). L_loc is the sum of smooth L1 loss across all bounding box properties( cx,cy,w,h) for matched  positive boxes. This means that it does not tale into account default boxes whose classes are the background class or default boxes that do not matched with any ground truth boxes. Through this, it will be rewarded for making bounding box predictions that have objects in them. 
+L_conf sum the loss for matches positives default boxes and negative default boxes. Why negative boxes are also factored into classification loss is because we want to punish wrong predictions.
 ## Code:
 1. 1configs. Create a config file to store all parameters
 2. 2custom_layers. Construct DefaultBoxes and L2 Normalization Layer
@@ -29,14 +39,3 @@ L2 Normalization Layer: This layer is used to apply L2 Normalization with a lea
   7)Concatenate all default boxes for every feature maps layers together
   8)Concatenate all classifications, localizations, and default boxes together to produce a final output of shape (total_default_boxes, num_classes + 1 + 4 + 8)
  4. loss. SSD Loss function: smooth L1 loss + softmax loss
-## The SSD Loss function
-SSD output has the shape of ( total_default_boxes, num_classes +1+4+8)
-What included in each total_default_boxed item are:
-1. Confidence scores for num_classes +1 background class
-2. 4 bounding box properties: cx ( the x offset to the matched defaults box’s center), cy (the y offset to the matched default box’s center), the log scale transform of the width of the bounding box (w),  and the log scale transform of the height of the bounding box (h)
-3. 4default values: the center x offset of the default box from the left of the image, the center y offset of the default box from the top of the image, the width of the default box, the height of the default box.
-4. 4 variance values: the values used to encode/ decode bounding box data.
-1, 2 are learnable by the ssd network and 3, 4 are constant.
-SSD loss function combines together regression loss (L_loc) and the classification loss(L_conf). L_loc is the sum of smooth L1 loss across all bounding box properties( cx,cy,w,h) for matched  positive boxes. This means that it does not tale into account default boxes whose classes are the background class or default boxes that do not matched with any ground truth boxes. Through this, it will be rewarded for making bounding box predictions that have objects in them. 
-L_conf sum the loss for matches positives default boxes and negative default boxes. Why negative boxes are also factored into classification loss is because we want to punish wrong predictions.
-
