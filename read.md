@@ -17,15 +17,15 @@ SSD300 SSD500 difference: input size
 DefaultBoxes layers: During the training stage the values from this layer are not needed. However, during inference stage, the values from this layer will be crucial for decoding bounding box predictions produced by the network.
 L2 Normalization Layer: This layer is used to apply L2 Normalization with a learnable scale value. It will only be used on the conv4_3 feature maps layer. 
 3. Construct the ssd network:
-  (1) Constructs the base network, loads a pre-trained weights, and freeze the base network layers so that its weights will not changed during training.
-  (2) Constructs the SSD’s extra feature layers.
-  (3) Determines all the possible scales for default boxes.
-  (4)  For each feature map: 
+  1)Constructs the base network, loads a pre-trained weights, and freeze the base network layers so that its weights will not changed during training.
+  2)Constructs the SSD’s extra feature layers.
+  3)Determines all the possible scales for default boxes.
+  4)For each feature map: 
 	a. apply 3 x 3 Convolutional Predictors to produce classification predictions of shape (w, h, num_default_boxes*(num_classes + 1)) and localization predictions of shape (w, h, num_default_boxes*4) where w and h are the width and height of the feature map respectively
   b.reshape those predictions to a shape of (w*h*num_default_boxes, num_classes+1) for classifications and (w*h*num_default_boxes, 4) for localization. 
   c. generate default boxes for that particular layer and reshape it from a shape of (w, h, num_default_boxes, 8) to a shape of (w*h*num_default_boxes, 8)
-  (5) Concatenate classification predictions from every feature maps together and apply a Softmax activation to get the final classification results.
-  (6) Concatenate localization predictions for every feature maps together
-  (7) Concatenate all default boxes for every feature maps layers together
-  (8) Concatenate all classifications, localizations, and default boxes together to produce a final output of shape (total_default_boxes, num_classes + 1 + 4 + 8)
+  5)Concatenate classification predictions from every feature maps together and apply a Softmax activation to get the final classification results.
+  6)Concatenate localization predictions for every feature maps together
+  7)Concatenate all default boxes for every feature maps layers together
+  8)Concatenate all classifications, localizations, and default boxes together to produce a final output of shape (total_default_boxes, num_classes + 1 + 4 + 8)
 
