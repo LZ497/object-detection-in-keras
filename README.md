@@ -21,6 +21,19 @@ What included in each total_default_boxed item are:
 1, 2 are learnable by the ssd network and 3, 4 are constant.
 SSD loss function combines together regression loss (L_loc) and the classification loss(L_conf). L_loc is the sum of smooth L1 loss across all bounding box properties( cx,cy,w,h) for matched  positive boxes. This means that it does not tale into account default boxes whose classes are the background class or default boxes that do not matched with any ground truth boxes. Through this, it will be rewarded for making bounding box predictions that have objects in them. 
 L_conf sum the loss for matches positives default boxes and negative default boxes. Why negative boxes are also factored into classification loss is because we want to punish wrong predictions.
+## Data Augmentation
+## Photometric augmentation.
+transforming the RGB channels of the original images. This is done by shifting each original pixel values (r, g, b) into a new pixel values (r′, g′, b′) affects the lighting and color of the original image but does not affect the bounding boxes around objects inside the image.
+1.Random brightness. This method of photometric augmentation adds a Δ value in the range of [-255, 255] from the original pixel values (r, g, b). If the Δ is a positive value, the new image will appear lighter than the original image. 
+2.Random contrast. Change the distinction between the dark and light areas
+3.Random Hue. Changes are made to the hoe channels of the original image. Δ[-360,360]
+4.Random lighting noise. Swapping the oder of different channels of the original pictures. Focus on the shape rather color.
+5.Random saturation. Change the saturation channel of the original pictures. More muted/pale, or internse/vivid
+## Geometric augmentation. 
+mapping each pixel in the original image onto a new position in the new image. Affects the geometry of the bounding boxes around objects but the classes of these objects remain unchanged. When we have objects in different shapes and sizes.
+1.Random vertical & Horizontal flip This method of geometric augmentation mirrors the original image on a given axis. 
+2.Random expand place the original image inside a new image that is larger than the original by a factor of Δ where Δ ≥ 1. Since the original image will not be able to cover all the area of the new image, the remaining pixel values on the new image are set to a mean pixel value (e.g. [0.485, 0.456, 0.406] for ImageNet mean).
+3.Random crop crop a certain portion of the original image. An object exists inside the crop. In addition, the overlap (IOU) between the crop and the object’s bounding box must exceed a certain threshold which is chosen at random. Similarly, the aspect ratio of the crop is also chosen as random.
 ## Code:
 1. 1configs. Create a config file to store all parameters
 2. 2custom_layers. Construct DefaultBoxes and L2 Normalization Layer
@@ -38,4 +51,5 @@ L2 Normalization Layer: This layer is used to apply L2 Normalization with a lea
   6)Concatenate localization predictions for every feature maps together
   7)Concatenate all default boxes for every feature maps layers together
   8)Concatenate all classifications, localizations, and default boxes together to produce a final output of shape (total_default_boxes, num_classes + 1 + 4 + 8)
- 4. loss. SSD Loss function: smooth L1 loss + softmax loss
+4. loss. SSD Loss function: smooth L1 loss + softmax loss
+5. Dara augmentation
