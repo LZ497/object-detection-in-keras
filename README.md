@@ -40,6 +40,18 @@ mapping each pixel in the original image onto a new position in the new image. A
 3.Non-Max Suppression (For Each Class) merge overlapping boxes together into 1 single prediction
 4.Top-K Selection. sort those predictions by their confidence score and select the k highest confidence score.
 5. Produce Final Results. choos those that have confidence scores above a certain threshold. Normally this threshold is chosen by picking the one that yields the highest mAP during the model’s evaluation.
+## Model evaluation
+Suppose we have two class cats and dogs
+True Positives (TP) — A correct detection of a ground-truth bounding box.
+False Positives (FP) — An incorrect detection of a nonexistent object or a misplaced detection of an existing object.
+Precision: TP/all detections. Measure the ability of a model to identify only relevant objects
+Recall: TP/all ground truths. Measure the ability of a model to identify all relevant objects
+Plot P-R curve
+11-point Interpolated Average Precision (AP): summarizes the P_R curve by averaging the maximum precision values at a set of 11 equally spaced recall levels.
+Average the AP of dog class and cat class
+If there are two or more detections having an IOU of 50% or higher with the same ground truth, then the detection with the highest IOU is marked as TP and all others are marked as FP. 
+Calculate Precision/Recall at every confidence score levels
+
 ## Code:
 1. 1configs. Create a config file to store all parameters
 2. 2custom_layers. Construct DefaultBoxes and L2 Normalization Layer
