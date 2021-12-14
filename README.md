@@ -34,6 +34,12 @@ mapping each pixel in the original image onto a new position in the new image. A
 1.Random vertical & Horizontal flip This method of geometric augmentation mirrors the original image on a given axis. 
 2.Random expand place the original image inside a new image that is larger than the original by a factor of Δ where Δ ≥ 1. Since the original image will not be able to cover all the area of the new image, the remaining pixel values on the new image are set to a mean pixel value (e.g. [0.485, 0.456, 0.406] for ImageNet mean).
 3.Random crop crop a certain portion of the original image. An object exists inside the crop. In addition, the overlap (IOU) between the crop and the object’s bounding box must exceed a certain threshold which is chosen at random. Similarly, the aspect ratio of the crop is also chosen as random.
+## Predictions decoding 
+1.Bounding boxes decoding
+2.Confidence Thresholding (For Each Class) remove bounding boxes with confidence score lower than a certain threshold. created a y_pred numpy array that has a shape of (total_default_boxes, 1 + 4) where 1 is the for the confidence scores of the class we’re interested in and 4 are the xmin, ymin, xmax, ymax values.
+3.Non-Max Suppression (For Each Class) merge overlapping boxes together into 1 single prediction
+4.Top-K Selection. sort those predictions by their confidence score and select the k highest confidence score.
+5. Produce Final Results. choos those that have confidence scores above a certain threshold. Normally this threshold is chosen by picking the one that yields the highest mAP during the model’s evaluation.
 ## Code:
 1. 1configs. Create a config file to store all parameters
 2. 2custom_layers. Construct DefaultBoxes and L2 Normalization Layer
@@ -53,3 +59,4 @@ L2 Normalization Layer: This layer is used to apply L2 Normalization with a lea
   8)Concatenate all classifications, localizations, and default boxes together to produce a final output of shape (total_default_boxes, num_classes + 1 + 4 + 8)
 4. 4loss. SSD Loss function: smooth L1 loss + softmax loss
 5. Dara augmentation: utils/augmentation_utils
+6. predicitons decoding: utils/ssd_utils+ custom_layers
